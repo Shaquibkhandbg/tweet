@@ -13,8 +13,19 @@ def index(request):
 
 def tweet_list(request):
    tweets = Tweet.objects.all().order_by('-created_at')
-  
-   return render(request,  'tweet_list.html',{'tweets': tweets})
+   
+    # setup pagination shows 6 tweets per page -------------- 
+   paginator = Paginator(tweets,6)
+   
+   # get the current page number from the URL (default to page1)
+   page_number = request.GET.get('page')
+   
+   # get the tweets for the current page
+   page_obj = paginator.get_page(page_number)
+   
+   
+   return render(request,'tweet_list.html',{'page_obj':page_obj})
+   # return render(request,  'tweet_list.html',{'tweets': tweets})
     
 @login_required
 def tweet_create(request):

@@ -1,37 +1,62 @@
 {% extends "layout.html" %}
 
 {% block title %}
-myTweet
+  myTweet
 {% endblock %}
 
 {% block content %}
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Welcome to Tweet Page</h2>
+  <div class="d-flex justify-content-end mb-3">
+    <!-- Button aligned to the right -->
+    <a class="btn btn-primary" href="{% url 'tweet_create' %}">Create Tweet</a>
+  </div>
 
-<h2 class="text-center mt-4">Welcome to Tweet Page</h2>
-<a class="btn btn-primary mb-4" href="{% url 'tweet_create' %}">Create Tweet</a>
-
-<div class="container">
-  <div class="row row-cols-1 row-cols-md-3 g-3">  <!-- Bootstrap grid for row-wise layout -->
-    {% for tweet in tweets %}
-    <div class="col"> <!-- Each tweet occupies one column -->
-      <div class="card h-100"> <!-- Cards have equal height -->
-        {% if tweet.photo %}
-        <img src="{{ tweet.photo.url }}" class="card-img-top" alt="Tweet Image">
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{ tweet.user.username }}</h5>
-          <p class="card-text">{{ tweet.text }}</p>
-        </div>
-        <div class="card-footer d-flex justify-content-between"> <!-- Footer for buttons -->
-          {% if tweet.user == user%}
-          <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-primary btn-sm">Edit</a>
-          <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-danger btn-sm">Delete</a>
-
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <!-- Bootstrap grid for row-wise layout -->
+    {% for tweet in page_obj %}
+      <div class="col">
+        <!-- Each tweet occupies one column -->
+        <div class="card h-100 shadow-sm">
+          <!-- Cards have equal height and shadow -->
+          {% if tweet.photo %}
+          <img
+            src="{{ tweet.photo.url }}"
+            class="card-img-top"
+            alt="Tweet Image"
+          />
           {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ tweet.user.username }}</h5>
+            <p class="card-text">{{ tweet.text }}</p>
+          </div>
+          <div class="card-footer d-flex justify-content-between">
+            <!-- Footer for buttons -->
+            {% if tweet.user == user %}
+            <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-primary btn-sm">Edit</a>
+            <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-danger btn-sm">Delete</a>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </div>
     {% endfor %}
   </div>
-</div>
 
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center align-items-center mt-4">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary">Previous</a>
+    {% else %}
+      <a class="btn btn-outline-primary disabled">Previous</a>
+    {% endif %}
+
+    <p>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary">Next</a>
+    {% else %}
+      <a class="btn btn-outline-primary disabled">Next</a>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
