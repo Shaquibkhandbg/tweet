@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth  import login
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 # Create your views here.
 
@@ -12,20 +13,26 @@ def index(request):
     return render(request, 'index.html')
 
 def tweet_list(request):
-   tweets = Tweet.objects.all().order_by('-created_at')
+    # Get the search query from the GET parameters
+    query = request.GET.get('q', '')  # Use an empty string as default if 'q' is missing
+    
+    # Filter tweets based on the query
+    if query:
+        tweets = Tweet.objects.filter(
+            Q(text__icontains=query) | Q(user__username__icontains=query)  # Match text or username
+        ).order_by('-created_at')
+    else:
+        tweets = Tweet.objects.all().order_by('-created_at')
+    
+    # Set up pagination with 6 tweets per page
+    paginator = Paginator(tweets, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Pass `query` to the template for search field and highlighting
+    return render(request, 'tweet_list.html', {'page_obj': page_obj, 'query': query})
+
    
-    # setup pagination shows 6 tweets per page -------------- 
-   paginator = Paginator(tweets,6)
-   
-   # get the current page number from the URL (default to page1)
-   page_number = request.GET.get('page')
-   
-   # get the tweets for the current page
-   page_obj = paginator.get_page(page_number)
-   
-   
-   return render(request,'tweet_list.html',{'page_obj':page_obj})
-   # return render(request,  'tweet_list.html',{'tweets': tweets})
     
 @login_required
 def tweet_create(request):

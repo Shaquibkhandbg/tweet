@@ -43,8 +43,9 @@
                 <a class="nav-link disabled" aria-disabled="true">Disabled</a>
               </li>
             </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            {% comment %} search functionality {% endcomment %}
+            <form class="d-flex" role="search" method="get" action="{% url "tweet_list" %}">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q" value="{{request.GET.q|default:""}}">
               <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
             <a href="{% url "tweet_list" %}" class="btn btn-primary mx-2">Tweet Home</a>

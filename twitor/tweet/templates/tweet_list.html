@@ -1,12 +1,29 @@
 {% extends "layout.html" %}
+{% load custom_filters %}
+{% comment %} {% load highlight %} {% endcomment %}
 
 {% block title %}
-  myTweet
+  MyTweet
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
   <h2 class="text-center mb-4">Welcome to Tweet Page</h2>
+
+  <!-- Search Bar -->
+  <form method="get" action="{% url 'tweet_list' %}" class="mb-4">
+    <div class="input-group">
+      <input 
+        type="text" 
+        name="q" 
+        class="form-control" 
+        placeholder="Search tweets..." 
+        value="{{ query|default:'' }}"  <!-- Retain the query -->
+      />
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
   <div class="d-flex justify-content-end mb-3">
     <!-- Button aligned to the right -->
     <a class="btn btn-primary" href="{% url 'tweet_create' %}">Create Tweet</a>
@@ -28,7 +45,8 @@
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ tweet.user.username }}</h5>
-            <p class="card-text">{{ tweet.text }}</p>
+            <!-- Highlight search terms in the tweet text -->
+            <p class="card-text">{{ tweet.text|highlight:query|default:'' }}</p>
           </div>
           <div class="card-footer d-flex justify-content-between">
             <!-- Footer for buttons -->
@@ -39,21 +57,23 @@
           </div>
         </div>
       </div>
+    {% empty %}
+      <p class="text-center">No tweets found.</p>
     {% endfor %}
   </div>
 
   <!-- Pagination -->
   <div class="d-flex justify-content-center align-items-center mt-4">
     {% if page_obj.has_previous %}
-      <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary">Previous</a>
+      <a href="?page={{ page_obj.previous_page_number }}&q={{ query|default:'' }}" class="btn btn-outline-primary">Previous</a>
     {% else %}
       <a class="btn btn-outline-primary disabled">Previous</a>
     {% endif %}
 
-    <p>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+    <p class="mx-3 my-0">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
 
     {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary">Next</a>
+      <a href="?page={{ page_obj.next_page_number }}&q={{ query|default:'' }}" class="btn btn-outline-primary">Next</a>
     {% else %}
       <a class="btn btn-outline-primary disabled">Next</a>
     {% endif %}
