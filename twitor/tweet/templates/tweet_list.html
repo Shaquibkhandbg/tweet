@@ -11,18 +11,7 @@
   <h2 class="text-center mb-4">Welcome to Tweet Page</h2>
 
   <!-- Search Bar -->
-  <form method="get" action="{% url 'tweet_list' %}" class="mb-4">
-    <div class="input-group">
-      <input 
-        type="text" 
-        name="q" 
-        class="form-control" 
-        placeholder="Search tweets..." 
-        value="{{ query|default:'' }}"  <!-- Retain the query -->
-      />
-      <button type="submit" class="btn btn-primary">Search</button>
-    </div>
-  </form>
+  
 
   <div class="d-flex justify-content-end mb-3">
     <!-- Button aligned to the right -->
